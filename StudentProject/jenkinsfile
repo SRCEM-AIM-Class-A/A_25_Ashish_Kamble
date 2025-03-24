@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/SRCEM-AIM-Class-A/A_25_Ashish_Kamble.git'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t ashishkamble8668/django_project .'
+            }
+        }
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASSWORD')]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u ashishkamble8668 --password-stdin'
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push ashishkamble8668/django_project'
+            }
+        }
+    }
+}
